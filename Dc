@@ -1,0 +1,36 @@
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
+  ]
+});
+
+const TOKEN = process.env.TOKEN;
+const CHANNEL_ID = process.env.CHANNEL_ID;
+
+client.on("ready", () => {
+  console.log(`Zalogowano jako ${client.user.tag}`);
+});
+
+client.on("guildMemberAdd", async (member) => {
+  const channel = member.guild.channels.cache.get(CHANNEL_ID);
+  if (!channel) return;
+
+  const embed = new EmbedBuilder()
+    .setColor("#00ff88")
+    .setTitle("👋 Nowy gracz na serwerze!")
+    .setDescription(
+      `✨ Witaj ${member} na serwerze **Polish Community BloxStrike!**\n\n` +
+      `👥 Aktualnie jest nas **${member.guild.memberCount} osób!**\n` +
+      `📋 Przeczytaj regulamin i zweryfikuj się, aby uzyskać dostęp.`
+    )
+    .setThumbnail(member.user.displayAvatarURL())
+    .setFooter({ text: `ID: ${member.id}` })
+    .setTimestamp();
+
+  channel.send({ embeds: [embed] });
+});
+
+client.login(TOKEN);
